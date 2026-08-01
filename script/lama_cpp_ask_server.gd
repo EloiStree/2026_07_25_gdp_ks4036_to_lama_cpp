@@ -58,28 +58,32 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 		print(response_text)
 
 
+
+
 func push_request_with_a_texture(user_question:String, texture:Texture2D):
 	var url = _server_url_and_port
 	var image := texture.get_image()
 	var png_bytes: PackedByteArray = image.save_png_to_buffer()
+	var image_html_b64:String = "data:image/png;base64," + Marshalls.raw_to_base64(png_bytes)
 	var payload = {
 		"model": _model_name,
 		"messages": [
 			{
 				"role": "user",
-				"content": user_question
+				"content": "[Context 0]\n Use the given image.\n [Context 1]\n " + user_question
 			}
 		],
+		"image_url": {
+			"url": image_html_b64
+		},
 		"temperature": _temperature,
 		"max_tokens": _max_tokens,
 		"top_p": _top_p,
 		"n": _n,
-		"image": Marshalls.raw_to_base64(png_bytes)
 	}
 	
 	var headers = ["Content-Type: application/json"]
 	var json_string = JSON.stringify(payload)
-	
-	var result = await _http_request.request(url, headers, HTTPClient.METHOD_POST, json_string)
 	on_request_sent.emit(user_question)
+	var result = await _http_request.request(url, headers, HTTPClient.METHOD_POST, json_string)
 	

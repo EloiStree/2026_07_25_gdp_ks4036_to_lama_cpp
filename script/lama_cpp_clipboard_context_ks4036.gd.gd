@@ -37,5 +37,3 @@ func _on_timer_timeout() -> void:
 		sb += "  led_right_color: " + str(_ks4036.get_led_right_color()) + "\n"
 		sb += "  display_ssd1306_128x64: " + str(_ks4036.get_display_ssd1306_128x64()) + "\n"
 		_text_context_changing = sb	
-
-
